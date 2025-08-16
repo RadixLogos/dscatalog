@@ -2,6 +2,7 @@ package com.RadixLogos.DsCatalog.entities;
 
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -14,13 +15,17 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-
+    private Instant createdAt;
     @ManyToMany(mappedBy = "categories")
     Set<Product> products = new HashSet<>();
 
-    public Category(Long id, String name) {
+    public Category() {
+    }
+
+    public Category(Long id, String name, Instant createdAt) {
         this.id = id;
         this.name = name;
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -37,6 +42,14 @@ public class Category {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Set<Product> getProducts() {

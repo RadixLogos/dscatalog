@@ -2,6 +2,7 @@ package com.RadixLogos.DsCatalog.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -14,20 +15,26 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Column(columnDefinition = "TEXT")
     private String description;
+    private LocalDate date;
     private Double price;
     private String imgUrl;
 
     @ManyToMany
-    @JoinTable(name = "product_category", joinColumns = @JoinColumn(name = "product_id"),
+    @JoinTable(name = "tb_product_category", joinColumns = @JoinColumn(name = "product_id"),
                 inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<Category> categories = new HashSet<>();
 
-    public Product(Long id, String name, String description, Double price, String imgUrl) {
+    public Product() {
+    }
+
+    public Product(Long id, String name, String description, LocalDate date, Double price, String imgUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.date = date;
         this.price = price;
         this.imgUrl = imgUrl;
     }
@@ -54,6 +61,14 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public Double getPrice() {
