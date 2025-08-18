@@ -9,11 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product,Long> {
-   /*
-SELECT tb_product.id, tb_product.name, tb_product.description, tb_product.date, tb_product.img_url, tb_product.price, tb_product_category.category_id
-FROM tb_product
-INNER JOIN tb_product_category ON tb_product.id = tb_product_category.product_id
-*/
+
     @Query(value = "SELECT obj " +
             "FROM Product obj JOIN FETCH obj.categories " +
             "WHERE UPPER(obj.name) LIKE UPPER(CONCAT(:name,'%'))",
