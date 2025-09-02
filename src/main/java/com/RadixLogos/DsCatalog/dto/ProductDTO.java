@@ -2,7 +2,10 @@ package com.RadixLogos.DsCatalog.dto;
 
 import com.RadixLogos.DsCatalog.entities.Product;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +17,8 @@ public record ProductDTO(
         String description,
         @Positive(message = "O preço do produto deve ser maior que zero")
         Double price,
+        @PastOrPresent
+        Instant date,
         String imgUrt,
         @NotEmpty(message = "O produto deve vazer parte de ao menos uma categoria")
         List<CategoryDTO> categories
@@ -27,6 +32,7 @@ public record ProductDTO(
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
+                product.getDate(),
                 product.getImgUrl(),
                 categories);
     }

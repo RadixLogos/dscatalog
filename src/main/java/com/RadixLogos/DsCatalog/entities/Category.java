@@ -15,7 +15,10 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant createdAt;
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant updatedAt;
     @ManyToMany(mappedBy = "categories")
     Set<Product> products = new HashSet<>();
 
@@ -47,17 +50,24 @@ public class Category {
     public Instant getCreatedAt() {
         return createdAt;
     }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
-
     public Set<Product> getProducts() {
         return products;
     }
 
     public void addProduct(Product product){
         products.add(product);
+    }
+
+    @PrePersist
+    public void prePersist(){
+        createdAt = Instant.now();
+    }
+    @PreUpdate
+    public void preUpdate(){
+        updatedAt = Instant.now();
     }
 
     @Override

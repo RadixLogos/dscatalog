@@ -4,6 +4,8 @@ import com.RadixLogos.DsCatalog.dto.CategoryDTO;
 import com.RadixLogos.DsCatalog.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,8 +20,16 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> findAllCategories(){
-        var response = categoryService.findAll();
+    public ResponseEntity<Page<CategoryDTO>> findAllCategories(
+            Pageable pageable,
+            @RequestParam(name = "name", defaultValue = "") String name){
+        var response = categoryService.findAll(pageable,name);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryDTO> findCategoryById(@PathVariable Long id){
+        var response = categoryService.findById(id);
         return ResponseEntity.ok(response);
     }
 
@@ -29,7 +39,22 @@ public class CategoryController {
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(categoryDTO.id()).toUri();
+                .buildAndExpand(response.id()).toUri();
         return ResponseEntity.created(uri).body(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoryDTO> updateCategory(
+            @Valid @RequestBody CategoryDTO categoryDTO,
+            @PathVariable Long id){
+        var response = categoryService.updateCategory(id,categoryDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategoryById(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
+
     }
 }

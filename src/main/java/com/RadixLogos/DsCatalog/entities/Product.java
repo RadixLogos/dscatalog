@@ -2,6 +2,7 @@ package com.RadixLogos.DsCatalog.entities;
 
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
@@ -17,7 +18,7 @@ public class Product {
     private String name;
     @Column(columnDefinition = "TEXT")
     private String description;
-    private LocalDate date;
+    private Instant date;
     private Double price;
     private String imgUrl;
 
@@ -30,7 +31,7 @@ public class Product {
     public Product() {
     }
 
-    public Product(Long id, String name, String description, LocalDate date, Double price, String imgUrl) {
+    public Product(Long id, String name, String description, Instant date, Double price, String imgUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -63,13 +64,14 @@ public class Product {
         this.description = description;
     }
 
-    public LocalDate getDate() {
+    public Instant getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
+    @PrePersist
+    public void prePersist(){
+        date = Instant.now();
+   }
 
     public Double getPrice() {
         return price;
