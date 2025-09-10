@@ -7,6 +7,7 @@ import com.RadixLogos.DsCatalog.repositories.CategoryRepository;
 import com.RadixLogos.DsCatalog.repositories.ProductRepository;
 import com.RadixLogos.DsCatalog.service.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -50,13 +51,12 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long id){
-        if(!productRepository.existsById(id)){
+    public void deleteProduct(Long id) {
+        if (!productRepository.existsById(id)) {
             throw new NotFoundException("Produto não encontrado");
         }
-        productRepository.deleteById(id);
+            productRepository.deleteById(id);
     }
-
     private void copyDtoToEntity(ProductDTO productDTO, Product product) {
         product.setName(productDTO.name());
         product.setDescription(productDTO.description());
