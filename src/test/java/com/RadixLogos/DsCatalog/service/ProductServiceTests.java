@@ -8,16 +8,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -42,9 +43,12 @@ public class ProductServiceTests {
         dependentId = 2L;
         product = Factory.createProductWithNullId();
         product.setId(existingId);
-        page = new PageImpl<Product>(List.of(product));
+        page = new PageImpl<>(List.of(product));
 
-        when(productRepository.findAll((Pageable) ArgumentMatchers.any())).thenReturn(page);
+        when(productRepository.findAllProducts(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(page);
+        when(productRepository.save(ArgumentMatchers.any())).thenReturn(product);
+        when(productRepository.findById(existingId)).thenReturn(Optional.of(product));
+        when(productRepository.findById(unexistingId)).thenReturn(Optional.empty()).thenThrow(NotFoundException.class);
         doReturn(true).when(productRepository).existsById(existingId);
         doReturn(true).when(productRepository).existsById(dependentId);
         doReturn(false).when(productRepository).existsById(unexistingId);
@@ -76,4 +80,12 @@ public class ProductServiceTests {
         verify(productRepository, times(1)).deleteById(dependentId);
     }
 
+    @Test
+    public void findAllShouldReturnPage(){
+        Pageable pageable = PageRequest.of(0,10);
+        var pageOfProductDto = productService.findAll(pageable,"");
+
+        Assertions.assertNotNull(pageOfProductDto);
+        verify(productRepository,times(1)).findAllProducts(pageable,"");
+    }
 }
