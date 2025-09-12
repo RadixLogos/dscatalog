@@ -1,13 +1,11 @@
 package com.RadixLogos.DsCatalog.service;
 
 import com.RadixLogos.DsCatalog.dto.ProductDTO;
-import com.RadixLogos.DsCatalog.entities.Category;
 import com.RadixLogos.DsCatalog.entities.Product;
 import com.RadixLogos.DsCatalog.repositories.CategoryRepository;
 import com.RadixLogos.DsCatalog.repositories.ProductRepository;
 import com.RadixLogos.DsCatalog.service.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,7 +24,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductDTO getProductById(Long id){
+    public ProductDTO findProductById(Long id){
         var product = productRepository.findById(id)
                 .orElseThrow(()-> new NotFoundException("Product not found"));
         return ProductDTO.fromProduct(product);
@@ -41,12 +39,13 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDTO updateProduct(Long id, ProductDTO productDTO){
-        if(!productRepository.existsById(id)){
+    public ProductDTO updateProduct(ProductDTO productDTO){
+        if(!productRepository.existsById(productDTO.id())){
             throw new NotFoundException("Produto não encontrado");
         }
-        var product = productRepository.getReferenceById(id);
+        var product = productRepository.getReferenceById(productDTO.id());
         copyDtoToEntity(productDTO,product);
+        productRepository.save(product);
         return ProductDTO.fromProduct(product);
     }
 

@@ -1,5 +1,6 @@
 package com.RadixLogos.DsCatalog.service;
 
+import com.RadixLogos.DsCatalog.dto.ProductDTO;
 import com.RadixLogos.DsCatalog.entities.Product;
 import com.RadixLogos.DsCatalog.repositories.ProductRepository;
 import com.RadixLogos.DsCatalog.service.exceptions.NotFoundException;
@@ -35,7 +36,7 @@ public class ProductServiceTests {
     private Long dependentId;
     private PageImpl<Product> page;
     private Product product;
-    
+    private ProductDTO productDTO;
     @BeforeEach
     void setUp(){
         existingId = 1L;
@@ -43,12 +44,14 @@ public class ProductServiceTests {
         dependentId = 2L;
         product = Factory.createProductWithNullId();
         product.setId(existingId);
+        productDTO = ProductDTO.fromProduct(product);
         page = new PageImpl<>(List.of(product));
 
         when(productRepository.findAllProducts(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(page);
         when(productRepository.save(ArgumentMatchers.any())).thenReturn(product);
         when(productRepository.findById(existingId)).thenReturn(Optional.of(product));
         when(productRepository.findById(unexistingId)).thenReturn(Optional.empty()).thenThrow(NotFoundException.class);
+        when(productRepository.getReferenceById(existingId)).thenReturn(product);
         doReturn(true).when(productRepository).existsById(existingId);
         doReturn(true).when(productRepository).existsById(dependentId);
         doReturn(false).when(productRepository).existsById(unexistingId);
@@ -83,9 +86,42 @@ public class ProductServiceTests {
     @Test
     public void findAllShouldReturnPage(){
         Pageable pageable = PageRequest.of(0,10);
-        var pageOfProductDto = productService.findAll(pageable,"");
+        var result = productService.findAll(pageable,"");
 
-        Assertions.assertNotNull(pageOfProductDto);
+        Assertions.assertNotNull(result);
         verify(productRepository,times(1)).findAllProducts(pageable,"");
+    }
+
+    @Test
+    public void findProductByIdShouldReturnProductDTOWhenExistingId(){
+        var result = productService.findProductById(existingId);
+        Assertions.assertInstanceOf(ProductDTO.class, result);
+        verify(productRepository, times(1)).findById(existingId);
+    }
+
+    @Test
+    public void findProductByIdShouldThrowNotFoundExceptionWhenUnexistingId(){
+        Assertions.assertThrows(NotFoundException.class,()->{
+           productService.findProductById(unexistingId);
+        });
+        verify(productRepository,times(0)).findById(unexistingId);
+    }
+
+    @Test
+    public void updateProductShouldReturnProductDTOWhenExistingId(){
+        var result = productService.updateProduct(productDTO);
+        Assertions.assertInstanceOf(ProductDTO.class,result);
+        verify(productRepository,times(1)).save(product);
+    }
+
+    @Test
+    public void updateProductShouldThrowNotFoundExceptionWhenUnexistingId(){
+        product.setId(unexistingId);
+        var invalidProductDTO = ProductDTO.fromProduct(product);
+        Assertions.assertThrows(NotFoundException.class,()->{
+            productService.updateProduct(invalidProductDTO);
+        });
+        verify(productRepository,times(1)).existsById(unexistingId);
+        verify(productRepository,times(0)).save(product);
     }
 }
