@@ -105,10 +105,10 @@ public class ProductControllerTests {
 
     @Test
     public void updateProductShouldReturnProductDTOWhenIdExists() throws Exception{
-        String objJson = objMapper.writeValueAsString(productDTO4Update);
+        String jsonBody = objMapper.writeValueAsString(productDTO4Update);
         mockMvc.perform(put("/products")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objJson)
+                        .content(jsonBody)
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -117,10 +117,10 @@ public class ProductControllerTests {
 
     @Test
     public void updateProductShouldThrowNotFoundExceptionWhenUnexistingId() throws Exception{
-        String jsonObjUnexisting = objMapper.writeValueAsString(unexistingProductDTO4Update);
+        String jsonBody = objMapper.writeValueAsString(unexistingProductDTO4Update);
         mockMvc.perform(put("/products")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonObjUnexisting)
+                .content(jsonBody)
         ).andExpect(status().isNotFound());
     }
 
