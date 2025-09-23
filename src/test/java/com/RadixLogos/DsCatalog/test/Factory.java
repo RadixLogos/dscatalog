@@ -12,7 +12,9 @@ public class Factory {
         return new Product(null,"Bola de basquete","Uma bola normal", Instant.now(),25.50,"http://boladebasquete.com");
     }
 
-    public static ProductDTO createProductDTO(){
-        return ProductDTO.fromProduct(createProductWithNullId());
+    public static ProductDTO createProductDTO(Long id){
+        var product = createProductWithNullId();
+        product.setId(id);
+        return ProductDTO.fromProduct(product);
     }
 }
