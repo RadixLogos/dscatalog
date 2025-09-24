@@ -13,7 +13,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     @Query(value = "SELECT obj " +
             "FROM Product obj JOIN FETCH obj.categories " +
             "WHERE UPPER(obj.name) LIKE UPPER(CONCAT(:name,'%'))",
-        countQuery = "SELECT COUNT(obj) FROM Product obj JOIN obj.categories"
+        countQuery = "SELECT COUNT(DISTINCT obj) FROM Product obj JOIN obj.categories"
     )
     public Page<Product> findAllProducts(Pageable pageable, String name);
 }
