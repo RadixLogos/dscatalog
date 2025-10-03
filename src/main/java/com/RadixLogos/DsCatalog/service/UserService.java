@@ -1,13 +1,21 @@
 package com.RadixLogos.DsCatalog.service;
 
+import com.RadixLogos.DsCatalog.dto.RoleDTO;
+import com.RadixLogos.DsCatalog.dto.UserDTO;
+import com.RadixLogos.DsCatalog.dto.UserInsertDTO;
 import com.RadixLogos.DsCatalog.dto.projections.UserProjection;
 import com.RadixLogos.DsCatalog.entities.Role;
 import com.RadixLogos.DsCatalog.entities.User;
+import com.RadixLogos.DsCatalog.repositories.RoleRepository;
 import com.RadixLogos.DsCatalog.repositories.UserRepository;
+import com.RadixLogos.DsCatalog.service.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +25,10 @@ import java.util.List;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private BCryptPasswordEncoder encoder;
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -33,6 +44,66 @@ public class UserService implements UserDetailsService {
             user.addAuthority(role);
         }
         return user;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserDTO> findAllUsersPaged(Pageable pageable){
+        var users = userRepository.findAll(pageable);
+        return users.map(UserDTO::fromUser);
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTO findUserById(Long id){
+        var user = userRepository.findById(id)
+                .orElseThrow(()-> new NotFoundException("User not found"));
+        return UserDTO.fromUser(user);
+    }
+
+    @Transactional
+    public UserDTO insertUser(UserInsertDTO userInsertDTO){
+        var user = new User();
+        copyDTOToEntity(userInsertDTO.userDTO(), user);
+        user.setPassword(encoder.encode(userInsertDTO.password()));
+        userRepository.save(user);
+        return UserDTO.fromUser(user);
+    }
+
+    @Transactional
+    public UserDTO updateUser(Long id, UserDTO userDTO){
+        if(!userRepository.existsById(id)){
+            throw new NotFoundException("User not found!");
+        }
+        var user =  userRepository.getReferenceById(id);
+        copyDTOToEntity(userDTO,user);
+        userRepository.save(user);
+        return UserDTO.fromUser(user);
+    }
+
+    @Transactional
+    public void deleteUser(Long id){
+        if(!userRepository.existsById(id)){
+            throw new NotFoundException("User not found!");
+        }
+        userRepository.deleteById(id);
+    }
+
+    private void copyDTOToEntity(UserDTO userDTO, User user) {
+        user.setFirstName(userDTO.firstName());
+        user.setLastName(userDTO.lastName());
+        user.setEmail(userDTO.email());
+        user.getAuthorities().clear();
+        userDTO.roles().forEach(r ->{
+            var role = findRole(r);
+            var authority = new Role(role.getId(), role.getAuthority());
+            user.addAuthority(authority);
+        });
+    }
+
+    private Role findRole(RoleDTO r) {
+        if(!roleRepository.existsById(r.id())){
+            throw new NotFoundException("Authority not found!");
+        }
+        return roleRepository.getReferenceById(r.id());
     }
 }
 

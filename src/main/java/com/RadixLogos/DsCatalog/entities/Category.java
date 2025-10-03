@@ -20,7 +20,7 @@ public class Category {
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant updatedAt;
     @ManyToMany(mappedBy = "categories")
-    Set<Product> products = new HashSet<>();
+    private Set<Product> products = new HashSet<>();
 
     public Category() {
     }

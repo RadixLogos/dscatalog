@@ -2,6 +2,7 @@ package com.RadixLogos.DsCatalog.controller;
 
 import com.RadixLogos.DsCatalog.dto.ProductDTO;
 import com.RadixLogos.DsCatalog.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDTO> insertProduct(@RequestBody ProductDTO productDTO){
+    public ResponseEntity<ProductDTO> insertProduct(@Valid  @RequestBody ProductDTO productDTO){
         var response = productService.insertProduct(productDTO);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -43,7 +44,7 @@ public class ProductController {
     }
 
     @PutMapping
-    public ResponseEntity<ProductDTO> updateProduct(@RequestBody ProductDTO productDTO){
+    public ResponseEntity<ProductDTO> updateProduct(@Valid @RequestBody ProductDTO productDTO){
         var response = productService.updateProduct(productDTO);
         return ResponseEntity.ok(response);
     }
