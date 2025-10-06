@@ -2,13 +2,14 @@ package com.RadixLogos.DsCatalog.dto;
 
 import com.RadixLogos.DsCatalog.entities.Role;
 import com.RadixLogos.DsCatalog.entities.User;
+import com.RadixLogos.DsCatalog.service.validation.UserUpdateValid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@UserUpdateValid
 public record UserDTO(
          Long id,
          @NotBlank(message = "O primeiro nome não pode estar em branco!")
