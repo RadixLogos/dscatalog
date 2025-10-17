@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,22 +28,21 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
-    @Autowired
-    private BCryptPasswordEncoder encoder;
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         List<UserProjection> userProjections = userRepository.findUserByUsername(username);
+        if(userProjections.isEmpty()){
+            throw new UsernameNotFoundException("User not found");
+        }
         var userData = userProjections.getFirst();
         User user = new User();
         user.setEmail(userData.getEmail());
         user.setPassword(userData.getPassword());
-        for(Role r : userProjections.getFirst().getAuthorities()){
-            Role role = new Role();
-            role.setId(r.getId());
-            role.setAuthority(r.getAuthority());
-            user.addAuthority(role);
-        }
+       for(UserProjection u : userProjections){
+           Role role = new Role(u.getRoleId(),u.getAuthority());
+           user.addAuthority(role);
+       }
         return user;
     }
 
@@ -61,6 +61,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserDTO insertUser(UserInsertDTO userInsertDTO){
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
         var user = new User();
         copyDTOToEntity(userInsertDTO.userDTO(), user);
         user.setPassword(encoder.encode(userInsertDTO.password()));

@@ -7,5 +7,6 @@ import java.util.List;
 public interface UserProjection {
     String getEmail();
     String getPassword();
-    List<Role> getAuthorities();
+    Long getRoleId();
+    String getAuthority();
 }

@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User,Long> {
-    @Query(nativeQuery = true, value = "SELECT tb_user.email, tb_user.password, tb_roles.id AS role_id, tb_roles.authority " +
+    @Query(nativeQuery = true, value = "SELECT tb_user.email, tb_user.password, tb_role.id AS role_id, tb_role.authority " +
             "FROM tb_user " +
             "INNER JOIN tb_user_role ON tb_user.id = tb_user_role.user_id " +
-            "INNER JOIN tb_roles ON tb_user_role.role_id = tb_roles.id " +
-            "WHERE user.email = :email")
+            "INNER JOIN tb_role ON tb_user_role.role_id = tb_role.id " +
+            "WHERE tb_user.email = :email")
     public List<UserProjection> findUserByUsername(String email);
 
     public User findUserByEmail(String email);
