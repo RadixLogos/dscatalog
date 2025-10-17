@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -27,12 +28,14 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('OPERATOR','ADMIN')")
     public ResponseEntity<ProductDTO> findProductById(@PathVariable Long id){
         var response = productService.findProductById(id);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<ProductDTO> insertProduct(@Valid  @RequestBody ProductDTO productDTO){
         var response = productService.insertProduct(productDTO);
         URI uri = ServletUriComponentsBuilder
@@ -44,12 +47,14 @@ public class ProductController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<ProductDTO> updateProduct(@Valid @RequestBody ProductDTO productDTO){
         var response = productService.updateProduct(productDTO);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
