@@ -28,6 +28,8 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private PasswordEncoder encoder;
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -61,7 +63,6 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserDTO insertUser(UserInsertDTO userInsertDTO){
-        PasswordEncoder encoder = new BCryptPasswordEncoder();
         var user = new User();
         copyDTOToEntity(userInsertDTO.userDTO(), user);
         user.setPassword(encoder.encode(userInsertDTO.password()));
