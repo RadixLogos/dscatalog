@@ -104,7 +104,7 @@ public class ProductServiceTests {
         Assertions.assertThrows(NotFoundException.class,()->{
            productService.findProductById(unexistingId);
         });
-        verify(productRepository,times(0)).findById(unexistingId);
+        verify(productRepository,times(1)).findById(unexistingId);
     }
 
     @Test

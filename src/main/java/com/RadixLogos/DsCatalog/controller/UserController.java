@@ -21,18 +21,21 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<Page<UserDTO>> findAllUsers(Pageable pageable){
             var response = userService.findAllUsersPaged(pageable);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<UserDTO> findUserById(@PathVariable Long id){
         var response = userService.findUserById(id);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<UserDTO> insertUser(@Valid @RequestBody UserInsertDTO userDTO){
         var response = userService.insertUser(userDTO);
         URI uri = ServletUriComponentsBuilder
@@ -44,12 +47,14 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userDTO, @PathVariable Long id){
         var response = userService.updateUser(id,userDTO);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();

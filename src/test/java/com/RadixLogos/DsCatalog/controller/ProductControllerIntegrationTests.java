@@ -3,6 +3,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.RadixLogos.DsCatalog.controller.util.TokenUtil;
 import com.RadixLogos.DsCatalog.dto.ProductDTO;
 import com.RadixLogos.DsCatalog.test.Factory;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,19 +25,23 @@ public class ProductControllerIntegrationTests {
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objMapper;
+    @Autowired
+    TokenUtil tokenUtil;
 
     private Long existingId;
     private Long unexistingId;
     private Long count;
     private ProductDTO existingProductDTO;
     private ProductDTO unexistingProductDTO;
+    private String bearerToken;
     @BeforeEach
-    void setUp(){
+    void setUp() throws Exception{
         existingId = 1L;
         unexistingId = 1000L;
         count = 25L;
         existingProductDTO = Factory.createProductDTO(existingId);
         unexistingProductDTO = Factory.createProductDTO(unexistingId);
+        bearerToken = tokenUtil.obtainAccessToken(mockMvc,"maria@gmail.com","123456");
     }
 
     @Test
@@ -53,6 +58,7 @@ public class ProductControllerIntegrationTests {
     void updateProductShouldReturnUpdatedProductDTOWhenExistingId() throws Exception{
         String jsonBody = objMapper.writeValueAsString(existingProductDTO);
         mockMvc.perform(put("/products")
+                .header("Authorization","Bearer " + bearerToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBody)
                 .accept(MediaType.APPLICATION_JSON))
@@ -66,6 +72,7 @@ public class ProductControllerIntegrationTests {
     void updateProductShouldThrowNotFoundExceptionWhenUnexistingId() throws Exception{
         String jsonBody = objMapper.writeValueAsString(unexistingProductDTO);
         mockMvc.perform(put("/products")
+                .header("Authorization","Bearer " + bearerToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBody))
         .andExpect(status().isNotFound());

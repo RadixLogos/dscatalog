@@ -1,6 +1,7 @@
 package com.RadixLogos.DsCatalog.test;
 
 import com.RadixLogos.DsCatalog.dto.ProductDTO;
+import com.RadixLogos.DsCatalog.entities.Category;
 import com.RadixLogos.DsCatalog.entities.Product;
 import com.RadixLogos.DsCatalog.repositories.ProductRepository;
 
@@ -9,7 +10,9 @@ import java.time.Instant;
 public class Factory {
 
     public static Product createProductWithNullId(){
-        return new Product(null,"Bola de basquete","Uma bola normal", Instant.now(),25.50,"http://boladebasquete.com");
+        var product = new Product(null,"Bola de basquete elétrica","Uma bola normal", Instant.now(),25.50,"http://boladebasquete.com");
+        product.addCategory(new Category(1L,"Eletrônicos", Instant.now()));
+        return product ;
     }
 
     public static ProductDTO createProductDTO(Long id){
