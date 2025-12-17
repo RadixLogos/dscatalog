@@ -21,10 +21,15 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<Page<CategoryDTO>> findAllCategories(
+    public ResponseEntity<Page<CategoryDTO>> findAll(
             Pageable pageable,
             @RequestParam(name = "name", defaultValue = "") String name){
         var response = categoryService.findAll(pageable,name);
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/all")
+    public ResponseEntity<List<CategoryDTO>> findAllCategories(){
+        var response = categoryService.findAllCategories();
         return ResponseEntity.ok(response);
     }
 

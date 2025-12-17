@@ -1,6 +1,7 @@
 package com.RadixLogos.DsCatalog.service;
 
 import com.RadixLogos.DsCatalog.dto.ProductDTO;
+import com.RadixLogos.DsCatalog.dto.projections.ProductProjection;
 import com.RadixLogos.DsCatalog.entities.Product;
 import com.RadixLogos.DsCatalog.repositories.CategoryRepository;
 import com.RadixLogos.DsCatalog.repositories.ProductRepository;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class ProductService {
@@ -23,6 +26,10 @@ public class ProductService {
         return products.map(ProductDTO::fromProduct);
     }
 
+    @Transactional(readOnly = true)
+    public Page<ProductProjection> searchAll(Pageable pageable){
+        return productRepository.searchAllProducts(List.of(),"",pageable);
+    }
     @Transactional(readOnly = true)
     public ProductDTO findProductById(Long id){
         var product = productRepository.findById(id)

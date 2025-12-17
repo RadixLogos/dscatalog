@@ -1,6 +1,7 @@
 package com.RadixLogos.DsCatalog.controller;
 
 import com.RadixLogos.DsCatalog.dto.ProductDTO;
+import com.RadixLogos.DsCatalog.dto.projections.ProductProjection;
 import com.RadixLogos.DsCatalog.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,12 @@ public class ProductController {
             Pageable pageable,
             @RequestParam(name = "name", defaultValue = "") String name){
             var response = productService.findAll(pageable,name);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProductProjection>> searchAll(Pageable pageable){
+        var response = productService.searchAll(pageable);
         return ResponseEntity.ok(response);
     }
 

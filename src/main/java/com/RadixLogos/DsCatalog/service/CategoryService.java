@@ -25,6 +25,10 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
+    public List<CategoryDTO> findAllCategories(){
+        return categoryRepository.findAll().stream().map(CategoryDTO::fromCategory).toList();
+    }
+    @Transactional(readOnly = true)
     public CategoryDTO findById(Long id){
         return CategoryDTO.fromCategory(categoryRepository.findById(id).orElseThrow(()-> new NotFoundException("Categoria não encontrada")));
     }
