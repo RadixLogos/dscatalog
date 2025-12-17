@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -27,9 +29,14 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductProjection> searchAll(Pageable pageable){
-        return productRepository.searchAllProducts(List.of(),"",pageable);
+    public Page<ProductProjection> searchAll(Pageable pageable, String name, String categoryId){
+        List<Long> categoryIds = new ArrayList<>();
+        if(!categoryId.equals("0")){
+            categoryIds = Arrays.stream(categoryId.split(",")).map(Long::parseLong).toList();
+        }
+        return productRepository.searchAllProducts(categoryIds,name,pageable);
     }
+
     @Transactional(readOnly = true)
     public ProductDTO findProductById(Long id){
         var product = productRepository.findById(id)

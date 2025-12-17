@@ -29,8 +29,10 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<ProductProjection>> searchAll(Pageable pageable){
-        var response = productService.searchAll(pageable);
+    public ResponseEntity<Page<ProductProjection>> searchAll(Pageable pageable,
+        @RequestParam(value = "name", defaultValue = "") String name,
+        @RequestParam(value = "categoryId", defaultValue = "0") String categoryId){
+        var response = productService.searchAll(pageable,name,categoryId);
         return ResponseEntity.ok(response);
     }
 
