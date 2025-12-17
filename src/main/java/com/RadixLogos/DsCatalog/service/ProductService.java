@@ -8,6 +8,7 @@ import com.RadixLogos.DsCatalog.repositories.ProductRepository;
 import com.RadixLogos.DsCatalog.service.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,12 +30,15 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductProjection> searchAll(Pageable pageable, String name, String categoryId){
+    public Page<ProductDTO> searchAll(Pageable pageable, String name, String categoryId){
         List<Long> categoryIds = new ArrayList<>();
         if(!categoryId.equals("0")){
             categoryIds = Arrays.stream(categoryId.split(",")).map(Long::parseLong).toList();
         }
-        return productRepository.searchAllProducts(categoryIds,name,pageable);
+        Page<ProductProjection> page = productRepository.searchAllProducts(categoryIds,name,pageable);
+        List<Product> products = productRepository.searchAllProductsWithCategories(page.map(ProductProjection::getId).toList());
+        Page<Product> pagedProducts = new PageImpl<>(products,page.getPageable(),page.getTotalElements());
+        return pagedProducts.map(ProductDTO::fromProduct);
     }
 
     @Transactional(readOnly = true)

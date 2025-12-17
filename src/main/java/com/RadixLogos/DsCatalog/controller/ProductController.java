@@ -25,21 +25,21 @@ public class ProductController {
             Pageable pageable,
             @RequestParam(name = "name", defaultValue = "") String name){
             var response = productService.findAll(pageable,name);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<ProductProjection>> searchAll(Pageable pageable,
+    public ResponseEntity<Page<ProductDTO>> searchAll(Pageable pageable,
         @RequestParam(value = "name", defaultValue = "") String name,
         @RequestParam(value = "categoryId", defaultValue = "0") String categoryId){
         var response = productService.searchAll(pageable,name,categoryId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> findProductById(@PathVariable Long id){
         var response = productService.findProductById(id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping
