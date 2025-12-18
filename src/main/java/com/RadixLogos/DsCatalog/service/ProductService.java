@@ -29,6 +29,7 @@ public class ProductService {
         return products.map(ProductDTO::fromProduct);
     }
 
+    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public Page<ProductDTO> searchAll(Pageable pageable, String name, String categoryId){
         List<Long> categoryIds = new ArrayList<>();
@@ -37,7 +38,7 @@ public class ProductService {
         }
         Page<ProductProjection> page = productRepository.searchAllProducts(categoryIds,name,pageable);
         List<Product> products = productRepository.searchAllProductsWithCategories(page.map(ProductProjection::getId).toList());
-        products = Util.orderBasedOn(page,products);
+        products = (List<Product>) Util.orderBasedOn(page,products);
         Page<Product> pagedProducts = new PageImpl<>(products,page.getPageable(),page.getTotalElements());
 
         return pagedProducts.map(ProductDTO::fromProduct);
