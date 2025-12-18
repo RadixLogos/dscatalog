@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import com.RadixLogos.DsCatalog.service.util.Util;
 @Service
 public class ProductService {
     @Autowired
@@ -37,7 +37,9 @@ public class ProductService {
         }
         Page<ProductProjection> page = productRepository.searchAllProducts(categoryIds,name,pageable);
         List<Product> products = productRepository.searchAllProductsWithCategories(page.map(ProductProjection::getId).toList());
+        products = Util.orderBasedOn(page,products);
         Page<Product> pagedProducts = new PageImpl<>(products,page.getPageable(),page.getTotalElements());
+
         return pagedProducts.map(ProductDTO::fromProduct);
     }
 

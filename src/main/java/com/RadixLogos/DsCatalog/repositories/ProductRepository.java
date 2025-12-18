@@ -22,12 +22,13 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
     //To make the search with the asked requirement from the front-end page, we've put this new method with plain SQL
     @Query(nativeQuery = true, value = """
+            SELECT * FROM(
             SELECT DISTINCT tb_product.id,tb_product.name
             FROM tb_product
             INNER JOIN tb_product_category ON tb_product.id = tb_product_category.product_id
             WHERE LOWER(tb_product.name) LIKE LOWER(CONCAT('%',:productName,'%'))
             AND (:categoryIds IS NULL OR tb_product_category.category_id IN :categoryIds)
-            ORDER BY tb_product.name
+            ) AS tb_result
             """,
             countQuery = """
             SELECT COUNT(*)
@@ -37,13 +38,12 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
             INNER JOIN tb_product_category ON tb_product.id = tb_product_category.product_id
             WHERE LOWER(tb_product.name) LIKE LOWER(CONCAT('%',:productName,'%'))
             AND (:categoryIds IS NULL OR tb_product_category.category_id IN :categoryIds)
-            ORDER BY tb_product.name
             )AS tb_result
             """
     )
     public Page<ProductProjection> searchAllProducts(List<Long> categoryIds, String productName, Pageable pageable);
 
-    @Query("SELECT obj FROM Product obj JOIN FETCH obj.categories WHERE obj.id IN :productIds ORDER BY obj.name")
+    @Query("SELECT obj FROM Product obj JOIN FETCH obj.categories WHERE obj.id IN :productIds")
     public List<Product> searchAllProductsWithCategories(List<Long> productIds);
 
 }
