@@ -23,9 +23,11 @@ public record UserDTO(
 ) {
     public static UserDTO fromUser(User user){
         List <RoleDTO> roles = new ArrayList<>();
-        user.getAuthorities().forEach(a ->{
-            roles.add(RoleDTO.fromRole((Role) a));
-        });
+        if(!user.getAuthorities().isEmpty()){
+            user.getAuthorities().forEach(a ->{
+                roles.add(RoleDTO.fromRole((Role) a));
+            });
+        }
         return new UserDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(),roles);
     }
 }

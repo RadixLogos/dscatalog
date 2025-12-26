@@ -66,6 +66,8 @@ public class UserService implements UserDetailsService {
         var user = new User();
         copyDTOToEntity(userInsertDTO.userDTO(), user);
         user.setPassword(encoder.encode(userInsertDTO.password()));
+        user.getAuthorities().clear();
+        user.addAuthority(roleRepository.findRoleByAuthority("ROLE_OPERATOR"));
         userRepository.save(user);
         return UserDTO.fromUser(user);
     }
@@ -94,11 +96,13 @@ public class UserService implements UserDetailsService {
         user.setLastName(userDTO.lastName());
         user.setEmail(userDTO.email());
         user.getAuthorities().clear();
-        userDTO.roles().forEach(r ->{
-            var role = findRole(r);
-            var authority = new Role(role.getId(), role.getAuthority());
-            user.addAuthority(authority);
-        });
+        if(userDTO.roles() != null){
+            userDTO.roles().forEach(r ->{
+                var role = findRole(r);
+                var authority = new Role(role.getId(), role.getAuthority());
+                user.addAuthority(authority);
+            });
+        }
     }
 
     private Role findRole(RoleDTO r) {

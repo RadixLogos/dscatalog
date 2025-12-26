@@ -35,7 +35,6 @@ public class UserController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ResponseEntity<UserDTO> insertUser(@Valid @RequestBody UserInsertDTO userDTO){
         var response = userService.insertUser(userDTO);
         URI uri = ServletUriComponentsBuilder
