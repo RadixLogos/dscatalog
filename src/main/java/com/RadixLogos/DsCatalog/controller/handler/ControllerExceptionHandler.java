@@ -2,6 +2,7 @@ package com.RadixLogos.DsCatalog.controller.handler;
 
 import com.RadixLogos.DsCatalog.dto.errors.CustomError;
 import com.RadixLogos.DsCatalog.dto.errors.ValidationError;
+import com.RadixLogos.DsCatalog.service.exceptions.EmailException;
 import com.RadixLogos.DsCatalog.service.exceptions.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,6 +29,13 @@ public class ControllerExceptionHandler {
     public ResponseEntity<CustomError> dataIntegrityViolation(DataIntegrityViolationException e, HttpServletRequest request){
         HttpStatus status = HttpStatus.BAD_REQUEST;
         CustomError err = new CustomError(Instant.now(),status.value(),"Falha de integridade referencial",request.getRequestURI());
+        return ResponseEntity.status(status.value()).body(err);
+    }
+
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<CustomError> dataIntegrityViolation(EmailException e, HttpServletRequest request){
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        CustomError err = new CustomError(Instant.now(),status.value(),"Email error",request.getRequestURI());
         return ResponseEntity.status(status.value()).body(err);
     }
 
