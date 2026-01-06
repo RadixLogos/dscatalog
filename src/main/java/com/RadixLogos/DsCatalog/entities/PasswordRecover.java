@@ -17,7 +17,10 @@ public class PasswordRecover {
     @Column(nullable = false)
     private Instant tokenDuration;
 
-    public PasswordRecover(String email, String token,  Instant tokenDuration) {
+    public PasswordRecover() {
+    }
+
+    public PasswordRecover(String email, String token, Instant tokenDuration) {
         this.email = email;
         this.token = token;
         this.tokenDuration = tokenDuration;

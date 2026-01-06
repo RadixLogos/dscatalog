@@ -33,6 +33,12 @@ public class UserController {
         var response = userService.findUserById(id);
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('ROLE_OPERATOR','ROLE_ADMIN')")
+    public ResponseEntity<UserDTO> findMe(){
+        var response = userService.findMe();
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping
     public ResponseEntity<UserDTO> insertUser(@Valid @RequestBody UserInsertDTO userDTO){
